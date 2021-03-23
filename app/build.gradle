@@ -6,7 +6,15 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+
+    signingConfigs {
+        development {
+            storeFile file("../keys/firmware-dev-key.jks")
+            storePassword 'snappautomotive'
+            keyAlias 'SnappMappsFirmwareDevKey'
+            keyPassword 'snappautomotive'
+        }
+    }
 
     defaultConfig {
         applicationId "com.snappautomotive.maps"
@@ -16,6 +24,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.development
     }
 
     buildTypes {
@@ -31,10 +40,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
