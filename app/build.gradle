@@ -8,7 +8,7 @@ android {
     compileSdkVersion 30
 
     signingConfigs {
-        development {
+        debug {
             storeFile file("../keys/firmware-dev-key.jks")
             storePassword 'snappautomotive'
             keyAlias 'SnappMappsFirmwareDevKey'
@@ -24,7 +24,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.development
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
