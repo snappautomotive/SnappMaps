@@ -1,12 +1,12 @@
 package com.snappautomotive.maps
 
 import android.app.Activity
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Bundle
 
 import androidx.preference.PreferenceManager
+import com.snappautomotive.maps.databinding.MainLayoutBinding
 
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.IRegisterReceiver
@@ -20,7 +20,6 @@ import org.osmdroid.tileprovider.util.SimpleRegisterReceiver
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 
-import kotlinx.android.synthetic.main.main.mapView
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -29,6 +28,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 class MainActivity : Activity() {
 
     private val mNetworkAvailabilityChecker  = NetworkAvailabilityChecker()
+
+    private lateinit var binding : MainLayoutBinding
 
     // Callback class which allows us to track which networks are available.
     private val mNetworkCallback = object: ConnectivityManager.NetworkCallback() {
@@ -48,7 +49,7 @@ class MainActivity : Activity() {
                 return
             }
 
-            mapView.postInvalidate()
+            binding.mapView.postInvalidate()
         }
     }
 
@@ -58,14 +59,15 @@ class MainActivity : Activity() {
         Configuration.getInstance().load(applicationContext,
                 PreferenceManager.getDefaultSharedPreferences(applicationContext))
 
-        setContentView(R.layout.main)
+        binding = MainLayoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         configureOSMDroid()
 
-        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.ALWAYS)
+        binding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.ALWAYS)
 
         val startPosition = GeoPoint(48.129085, 11.5654545, 18.0)
-        val mapController = mapView.controller
+        val mapController = binding.mapView.controller
         mapController.setZoom(16.0)
         mapController.setCenter(startPosition)
     }
@@ -78,9 +80,7 @@ class MainActivity : Activity() {
         val connectivityManager = getSystemService(ConnectivityManager::class.java)
         mNetworkAvailabilityChecker.connectivityManager = connectivityManager
 
-        if (mapView != null) {
-            mapView.onResume()
-        }
+        binding.mapView.onResume()
 
         connectivityManager.registerDefaultNetworkCallback(mNetworkCallback)
     }
@@ -94,9 +94,7 @@ class MainActivity : Activity() {
         Configuration.getInstance().save(applicationContext,
                 PreferenceManager.getDefaultSharedPreferences(applicationContext))
 
-        if (mapView != null) {
-            mapView.onPause()
-        }
+        binding.mapView.onPause()
 
         mNetworkAvailabilityChecker.connectivityManager = null
     }
@@ -118,6 +116,6 @@ class MainActivity : Activity() {
                 registerReceiver,
                 arrayOf(fileSystemProvider, downloaderProvider))
 
-        mapView.tileProvider = tileProviderArray
+        binding.mapView.tileProvider = tileProviderArray
     }
 }
