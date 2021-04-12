@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">SnappMaps</string>
+    <string name="location_permission_text">
+        In order to allow the map to be updated as you
+        drive you will need to allow the application
+        to access your location.
+    </string>
 </resources>

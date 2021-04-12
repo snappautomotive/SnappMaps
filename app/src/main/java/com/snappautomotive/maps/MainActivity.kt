@@ -1,9 +1,11 @@
 package com.snappautomotive.maps
 
 import android.app.Activity
+import android.location.Location
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Bundle
+import androidx.core.app.ActivityCompat
 
 import androidx.preference.PreferenceManager
 import com.snappautomotive.maps.databinding.MainLayoutBinding
@@ -25,11 +27,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Main Activity which is used by the dashboard view to display the map.
  */
-class MainActivity : Activity() {
+class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallback {
 
     private val mNetworkAvailabilityChecker  = NetworkAvailabilityChecker()
 
     private lateinit var binding : MainLayoutBinding
+    private lateinit var locationTracker: LocationTracker
 
     // Callback class which allows us to track which networks are available.
     private val mNetworkCallback = object: ConnectivityManager.NetworkCallback() {
@@ -65,11 +68,15 @@ class MainActivity : Activity() {
         configureOSMDroid()
 
         binding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.ALWAYS)
+        binding.mapView.controller.setZoom(16.0)
 
-        val startPosition = GeoPoint(48.129085, 11.5654545, 18.0)
-        val mapController = binding.mapView.controller
-        mapController.setZoom(16.0)
-        mapController.setCenter(startPosition)
+        locationTracker = LocationTracker(this, ::updateLocation)
+        setDefaultLocation()
+    }
+
+    public override fun onStart() {
+        super.onStart()
+        locationTracker.startTracking()
     }
 
     public override fun onResume() {
@@ -99,6 +106,11 @@ class MainActivity : Activity() {
         mNetworkAvailabilityChecker.connectivityManager = null
     }
 
+    public override fun onStop() {
+        super.onStop()
+        locationTracker.stopTracking()
+    }
+
     private fun configureOSMDroid() {
         val applicationContext = applicationContext
         val registerReceiver: IRegisterReceiver = SimpleRegisterReceiver(applicationContext)
@@ -117,5 +129,25 @@ class MainActivity : Activity() {
                 arrayOf(fileSystemProvider, downloaderProvider))
 
         binding.mapView.tileProvider = tileProviderArray
+    }
+
+    private fun setDefaultLocation() {
+        updateLocation(48.129085, 11.5654545, 18.0)
+    }
+
+    private fun updateLocation(location: Location) {
+        updateLocation(location.latitude, location.longitude, location.altitude)
+    }
+
+    private fun updateLocation(latitude:Double, longitude:Double, altitude:Double) {
+        val position = GeoPoint(latitude, longitude, altitude)
+        val mapController = binding.mapView.controller
+        mapController.setCenter(position)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if(requestCode == LocationTracker.PERMISSION_RESULT_CODE) {
+            locationTracker.handlePermissionResult(grantResults)
+        }
     }
 }
