@@ -75,16 +75,21 @@ class LocationTracker(private val activity: Activity, callback: (Location) -> Un
         }
 
         locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
+                locationProvider,
                 TimeUnit.SECONDS.toMillis(1L), // 1s updates
                 1.0F,                                    // 1 meter updates
                 listener)
-        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        locationManager.getLastKnownLocation(locationProvider)
     }
 
     private fun getLocationProvider(): String? {
         val locationCriteria = Criteria()
         locationCriteria.accuracy = Criteria.ACCURACY_FINE
+        val provider = locationManager.getBestProvider(locationCriteria, true)
+        if(provider != null) {
+            return provider
+        }
+        locationCriteria.accuracy = Criteria.ACCURACY_COARSE
         return locationManager.getBestProvider(locationCriteria, true)
     }
 
