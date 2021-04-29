@@ -5,9 +5,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
@@ -66,12 +68,24 @@ class LocationTracker(private val activity: Activity, callback: (Location) -> Un
     }
 
     private fun registerLocationListener() {
+        val locationProvider = getLocationProvider()
+        if (locationProvider == null) {
+            Log.w("SMLocationTracker", "Unable to find a location provider")
+            return
+        }
+
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 TimeUnit.SECONDS.toMillis(1L), // 1s updates
                 1.0F,                                    // 1 meter updates
                 listener)
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+    }
+
+    private fun getLocationProvider(): String? {
+        val locationCriteria = Criteria()
+        locationCriteria.accuracy = Criteria.ACCURACY_FINE
+        return locationManager.getBestProvider(locationCriteria, true)
     }
 
     private class ListenerSimplifier(private val locationUpdateListener: (Location) -> Unit)
