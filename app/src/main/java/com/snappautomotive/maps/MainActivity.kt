@@ -67,7 +67,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
 
         configureOSMDroid()
 
-        binding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.ALWAYS)
+        binding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         binding.mapView.controller.setZoom(16.0)
 
         locationTracker = LocationTracker(this, ::updateLocation)
@@ -115,7 +115,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         val applicationContext = applicationContext
         val registerReceiver: IRegisterReceiver = SimpleRegisterReceiver(applicationContext)
 
-        val tileSource: ITileSource = TileSourceFactory.DEFAULT_TILE_SOURCE
+        val tileSource: ITileSource = TileSourceFactory.WIKIMEDIA
 
         val tileWriter = TileWriter()
         val fileSystemProvider = MapTileFilesystemProvider(registerReceiver, tileSource)
@@ -129,6 +129,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
                 arrayOf(fileSystemProvider, downloaderProvider))
 
         binding.mapView.tileProvider = tileProviderArray
+        binding.mapView.setMultiTouchControls(true)
     }
 
     private fun setDefaultLocation() {
