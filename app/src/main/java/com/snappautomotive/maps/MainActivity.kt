@@ -115,7 +115,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         val applicationContext = applicationContext
         val registerReceiver: IRegisterReceiver = SimpleRegisterReceiver(applicationContext)
 
-        val tileSource: ITileSource = TileSourceFactory.WIKIMEDIA
+        val tileSource: ITileSource = TileSourceFactory.DEFAULT_TILE_SOURCE
 
         val tileWriter = TileWriter()
         val fileSystemProvider = MapTileFilesystemProvider(registerReceiver, tileSource)
