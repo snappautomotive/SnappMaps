@@ -21,6 +21,11 @@
             android:name=".MainActivity"
             android:launchMode="singleTask"
             android:resizeableActivity="true">
+
+            <meta-data
+                android:name="distractionOptimized"
+                android:value="true" />
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT"/>
