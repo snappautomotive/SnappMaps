@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId "com.snappautomotive.maps"
-        minSdkVersion 30
+        minSdkVersion 31
         compileSdk 34
         versionCode 10102
         versionName "1.1.2"
