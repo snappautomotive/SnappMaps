@@ -1,6 +1,9 @@
 name: Run build on PRs
 
-on: pull_request
+on:
+  push:
+    branches:
+      -main
 
 jobs:
   build:
@@ -12,7 +15,5 @@ jobs:
         java-version: 17
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
-      with:
-        ache-read-only: true
     - name: Build with Gradle
       run: ./gradlew build
