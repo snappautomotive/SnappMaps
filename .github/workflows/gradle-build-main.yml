@@ -1,6 +1,9 @@
 name: Run build on PRs
 
-on: pull_request
+on:
+  push:
+    branches:
+      -main
 
 jobs:
   build:
