@@ -39,6 +39,7 @@ class NetworkAvailabilityChecker :
         return isAnyNetworkConnected()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun getRouteToPathExists(hostAddress: Int): Boolean {
         return isAnyNetworkConnected()
     }
