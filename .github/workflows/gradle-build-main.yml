@@ -12,7 +12,5 @@ jobs:
         java-version: 17
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
-      with:
-	cache-read-only: true
     - name: Build with Gradle
       run: ./gradlew build
