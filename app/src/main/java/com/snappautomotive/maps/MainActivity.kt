@@ -22,10 +22,8 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
-
 import androidx.preference.PreferenceManager
 import com.snappautomotive.maps.databinding.MainLayoutBinding
-
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.IRegisterReceiver
 import org.osmdroid.tileprovider.MapTileProviderArray
@@ -37,46 +35,49 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.tileprovider.util.SimpleRegisterReceiver
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
-
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Main Activity which is used by the dashboard view to display the map.
  */
-class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallback {
+class MainActivity :
+    Activity(),
+    ActivityCompat.OnRequestPermissionsResultCallback {
+    private val mNetworkAvailabilityChecker = NetworkAvailabilityChecker()
 
-    private val mNetworkAvailabilityChecker  = NetworkAvailabilityChecker()
-
-    private lateinit var binding : MainLayoutBinding
+    private lateinit var binding: MainLayoutBinding
     private lateinit var locationTracker: LocationTracker
 
     // Callback class which allows us to track which networks are available.
-    private val mNetworkCallback = object: ConnectivityManager.NetworkCallback() {
-        val mCurrentConnectivityState = AtomicBoolean(false)
+    private val mNetworkCallback =
+        object : ConnectivityManager.NetworkCallback() {
+            val mCurrentConnectivityState = AtomicBoolean(false)
 
-        override fun onAvailable(network: Network) {
-            invalidateMapIfStateChange()
-        }
-
-        override fun onLost(network: Network) {
-            invalidateMapIfStateChange()
-        }
-
-        fun invalidateMapIfStateChange() {
-            val connectivityState = mNetworkAvailabilityChecker.isAnyNetworkConnected()
-            if (mCurrentConnectivityState.compareAndSet(connectivityState, connectivityState)) {
-                return
+            override fun onAvailable(network: Network) {
+                invalidateMapIfStateChange()
             }
 
-            binding.mapView.postInvalidate()
+            override fun onLost(network: Network) {
+                invalidateMapIfStateChange()
+            }
+
+            fun invalidateMapIfStateChange() {
+                val connectivityState = mNetworkAvailabilityChecker.isAnyNetworkConnected()
+                if (mCurrentConnectivityState.compareAndSet(connectivityState, connectivityState)) {
+                    return
+                }
+
+                binding.mapView.postInvalidate()
+            }
         }
-    }
 
     public override fun onCreate(savedInstance: Bundle?) {
         super.onCreate(savedInstance)
 
-        Configuration.getInstance().load(applicationContext,
-                PreferenceManager.getDefaultSharedPreferences(applicationContext))
+        Configuration.getInstance().load(
+            applicationContext,
+            PreferenceManager.getDefaultSharedPreferences(applicationContext),
+        )
 
         binding = MainLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -97,8 +98,10 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
 
     public override fun onResume() {
         super.onResume()
-        Configuration.getInstance().load(applicationContext,
-                PreferenceManager.getDefaultSharedPreferences(applicationContext))
+        Configuration.getInstance().load(
+            applicationContext,
+            PreferenceManager.getDefaultSharedPreferences(applicationContext),
+        )
 
         val connectivityManager = getSystemService(ConnectivityManager::class.java)
         mNetworkAvailabilityChecker.connectivityManager = connectivityManager
@@ -114,8 +117,10 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         getSystemService(ConnectivityManager::class.java)
             .unregisterNetworkCallback(mNetworkCallback)
 
-        Configuration.getInstance().save(applicationContext,
-                PreferenceManager.getDefaultSharedPreferences(applicationContext))
+        Configuration.getInstance().save(
+            applicationContext,
+            PreferenceManager.getDefaultSharedPreferences(applicationContext),
+        )
 
         binding.mapView.onPause()
 
@@ -136,13 +141,19 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         val tileWriter = TileWriter()
         val fileSystemProvider = MapTileFilesystemProvider(registerReceiver, tileSource)
 
-        val downloaderProvider = MapTileDownloader(
-            tileSource, tileWriter, mNetworkAvailabilityChecker)
+        val downloaderProvider =
+            MapTileDownloader(
+                tileSource,
+                tileWriter,
+                mNetworkAvailabilityChecker,
+            )
 
-        val tileProviderArray = MapTileProviderArray(
+        val tileProviderArray =
+            MapTileProviderArray(
                 tileSource,
                 registerReceiver,
-                arrayOf(fileSystemProvider, downloaderProvider))
+                arrayOf(fileSystemProvider, downloaderProvider),
+            )
 
         binding.mapView.tileProvider = tileProviderArray
         binding.mapView.setMultiTouchControls(true)
@@ -156,14 +167,22 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         updateLocation(location.latitude, location.longitude, location.altitude)
     }
 
-    private fun updateLocation(latitude:Double, longitude:Double, altitude:Double) {
+    private fun updateLocation(
+        latitude: Double,
+        longitude: Double,
+        altitude: Double,
+    ) {
         val position = GeoPoint(latitude, longitude, altitude)
         val mapController = binding.mapView.controller
         mapController.setCenter(position)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == LocationTracker.PERMISSION_RESULT_CODE) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        if (requestCode == LocationTracker.PERMISSION_RESULT_CODE) {
             locationTracker.handlePermissionResult(grantResults)
         }
     }

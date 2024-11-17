@@ -36,39 +36,45 @@ import java.util.concurrent.TimeUnit
  * This is optimised for automotive use, where power is constantly and so
  * we don't have to worry about battery related optimisations.
  */
-// As a system app we know we'll get the permissions we need.
 @SuppressLint("MissingPermission")
-class LocationTracker(private val activity: Activity, callback: (Location) -> Unit) {
-
+class LocationTracker(
+    private val activity: Activity,
+    callback: (Location) -> Unit,
+) {
     private val locationManager = activity.getSystemService(LocationManager::class.java)
     private val listener = ListenerSimplifier(callback)
 
     fun startTracking() {
         when {
             ContextCompat.checkSelfPermission(
-                    activity,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED -> {
                 registerLocationListener()
             }
-            shouldShowRequestPermissionRationale(activity,
-                    Manifest.permission.ACCESS_FINE_LOCATION) -> showEducationalUI()
+            shouldShowRequestPermissionRationale(
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) -> showEducationalUI()
             else -> requestPermissions()
         }
     }
 
     private fun showEducationalUI() {
-        AlertDialog.Builder(activity)
-                .setMessage(R.string.location_permission_text)
-                .setCancelable(true)
-                .setPositiveButton(android.R.string.ok) { _, _ -> requestPermissions() }
-                .show()
+        AlertDialog
+            .Builder(activity)
+            .setMessage(R.string.location_permission_text)
+            .setCancelable(true)
+            .setPositiveButton(android.R.string.ok) { _, _ -> requestPermissions() }
+            .show()
     }
 
     private fun requestPermissions() {
-        ActivityCompat.requestPermissions(activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_RESULT_CODE)
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_RESULT_CODE,
+        )
     }
 
     fun handlePermissionResult(grantResults: IntArray) {
@@ -85,15 +91,17 @@ class LocationTracker(private val activity: Activity, callback: (Location) -> Un
         locationManager.requestLocationUpdates(
             LocationManager.FUSED_PROVIDER,
             TimeUnit.SECONDS.toMillis(1L), // 1s updates
-            1.0F,                                    // 1 meter updates
-            listener)
+            1.0F, // 1 meter updates
+            listener,
+        )
         locationManager.getLastKnownLocation(
-            LocationManager.FUSED_PROVIDER
+            LocationManager.FUSED_PROVIDER,
         )
     }
 
-    private class ListenerSimplifier(private val locationUpdateListener: (Location) -> Unit)
-        : LocationListener {
+    private class ListenerSimplifier(
+        private val locationUpdateListener: (Location) -> Unit,
+    ) : LocationListener {
         override fun onLocationChanged(location: Location) {
             locationUpdateListener(location)
         }

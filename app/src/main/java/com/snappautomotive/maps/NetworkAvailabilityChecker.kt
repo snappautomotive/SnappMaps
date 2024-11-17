@@ -22,29 +22,17 @@ import org.osmdroid.tileprovider.modules.INetworkAvailablityCheck
 /**
  * Dummy network checker which always says a network is available.
  */
-class NetworkAvailabilityChecker :
-        INetworkAvailablityCheck {
-
+class NetworkAvailabilityChecker : INetworkAvailablityCheck {
     var connectivityManager: ConnectivityManager? = null
 
-    override fun getNetworkAvailable(): Boolean {
-        return isAnyNetworkConnected()
-    }
+    override fun getNetworkAvailable(): Boolean = isAnyNetworkConnected()
 
-    override fun getWiFiNetworkAvailable(): Boolean {
-        return isAnyNetworkConnected()
-    }
+    override fun getWiFiNetworkAvailable(): Boolean = isAnyNetworkConnected()
 
-    override fun getCellularDataNetworkAvailable(): Boolean {
-        return isAnyNetworkConnected()
-    }
+    override fun getCellularDataNetworkAvailable(): Boolean = isAnyNetworkConnected()
 
-    @Deprecated("Deprecated in Java")
-    override fun getRouteToPathExists(hostAddress: Int): Boolean {
-        return isAnyNetworkConnected()
-    }
+    @Deprecated("Deprecated in Java", ReplaceWith("isAnyNetworkConnected()"))
+    override fun getRouteToPathExists(hostAddress: Int): Boolean = isAnyNetworkConnected()
 
-    fun isAnyNetworkConnected(): Boolean {
-        return connectivityManager?.activeNetwork != null
-    }
+    fun isAnyNetworkConnected(): Boolean = connectivityManager?.activeNetwork != null
 }
