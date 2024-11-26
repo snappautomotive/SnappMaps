@@ -19,7 +19,12 @@
             android:name=".MainActivity"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
-            android:exported="true">
+            android:exported="true"
+            android:allowUntrustedActivityEmbedding="true">
+
+            <property
+                android:name="android.window.PROPERTY_ACTIVITY_EMBEDDING_SPLITS_ENABLED"
+                android:value="true" />
 
             <meta-data
                 android:name="distractionOptimized"
