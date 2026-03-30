@@ -19,7 +19,7 @@ jobs:
       with:
         cache-write-only: true
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4
       with:
         packages: 'tools platform-tools build-tools;35.0.0 platforms;android-35 platforms;android-31'
     - name: Build with Gradle
