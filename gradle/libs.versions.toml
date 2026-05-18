@@ -10,7 +10,7 @@ android-gradle-plugin = "9.0.1"
 androidx-core-ktx = { module = "androidx.core:core-ktx", version = "1.17.0" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-window = { module = "androidx.window:window", version = "1.5.1" }
-google-material = { module = "com.google.android.material:material", version = "1.13.0" }
+google-material = { module = "com.google.android.material:material", version = "1.14.0" }
 osmdroid = { module = "org.osmdroid:osmdroid-android", version = "6.1.20" }
 
 # Testing dependencies
